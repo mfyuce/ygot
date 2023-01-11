@@ -619,7 +619,7 @@ func (s *ProtoLangMapper) protobufPackage(e *yang.Entry, compressPaths bool) str
 
 	// Make the name unique since foo.bar.baz-bat and foo.bar.baz_bat will
 	// become the same name in the safeProtoIdentifierName transformation above.
-	n := genutil.MakeNameUnique(strings.Join(parts, "."), s.definedGlobals)
+	n := genutil.MakeNameUniqueWithParent(strings.Join(parts, "."), s.definedGlobals, "_")
 	s.definedGlobals[n] = true
 
 	// Record the mapping between this entry's parent and the defined

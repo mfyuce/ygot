@@ -98,6 +98,34 @@ func MakeNameUnique(name string, definedNames map[string]bool) string {
 	}
 }
 
+// MakeNameUnique makes the name specified as an argument unique based on the names
+// already defined within a particular context which are specified within the
+// definedNames map. If the name has already been defined, an underscore is appended
+// to the name until it is unique.
+func MakeNameUniqueWithParent(name string, definedNames map[string]bool, parentName string) string {
+	const cnt = 8
+	arr := [cnt]string{"default", "static", "interface", "option", "map", "group", "class", "import"}
+	for i := 0; i < cnt; i++ {
+		a := arr[i]
+		if strings.Contains(name, a) && !strings.Contains(name, a+"_"+parentName) {
+			if !strings.Contains(name, "."+a+".") {
+				name = fmt.Sprintf("%s_%s", name, parentName)
+			} else {
+				name = strings.ReplaceAll(name, "."+a+".", "."+a+"_"+parentName+".")
+			}
+		}
+	}
+
+	for {
+
+		if _, nameUsed := definedNames[name]; !nameUsed {
+			definedNames[name] = true
+			return name
+		}
+		name = fmt.Sprintf("%s_", name)
+	}
+}
+
 // EntryCamelCaseName returns the camel case version of the Entry Name field, or
 // the CamelCase name that is specified by a "camelcase-name" extension on the
 // field. The returned name is not guaranteed to be unique within any context.

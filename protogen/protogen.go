@@ -584,7 +584,7 @@ func genProto3Msg(msg *ygen.ParsedDirectory, ir *ygen.IR, cfg *protoMsgConfig, p
 		field := msg.Fields[name]
 
 		fieldDef := &protoMsgField{
-			Name: genutil.MakeNameUnique(field.Name, definedFieldNames),
+			Name: genutil.MakeNameUniqueWithParent(field.Name, definedFieldNames, "_"),
 		}
 
 		t, err := protoTagForEntry(field.YANGDetails)
@@ -1073,7 +1073,8 @@ func fieldTag(s string) (uint32, error) {
 // described, the name of the list, the package name that the list is within, and the
 // current generator state. It returns the definition of the list key proto.
 func genListKeyProto(listPackage string, listName string, args *protoDefinitionArgs) (*protoMsg, error) {
-	n := fmt.Sprintf("%s%s", listName, protoListKeyMessageSuffix)
+	i := args.field.MappedPaths[0]
+	n := fmt.Sprintf("%s_%s%s", strings.ReplaceAll(i[len(i)-2], "-", "_"), listName, protoListKeyMessageSuffix)
 	km := &protoMsg{
 		Name:     n,
 		YANGPath: args.field.YANGDetails.Path,
